@@ -1,0 +1,54 @@
+body {
+  background-color: #f9fafe;
+  margin: 0;
+  padding: 20px;
+}
+conainer {
+  max-width: 90%;
+  margin: 0 auto;
+}
+h1, h2 {
+  color: #2a4d74;
+}
+#van-canvas {
+  border: 2px solid #2a4d74;
+  background: white;
+  border-radius: 8px;
+}
+button {
+  margin: 10px 5px 10px 0;
+}
+#items-table th, #items-table td {
+  text-align: center;
+  font-size: 0.9rem;
+}
+form.grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  align-items: end;
+}
+
+form.grid button {
+  grid-column: span 2;
+  height: 40px;
+  align-self: center;
+  width: 100%;
+  margin: 0;
+}
+
+.button-row {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin: 24px 0;
+}
+
+.button-row button {
+  flex: 1 1 0;
+  min-width: 160px;
+  font-size: 1.1rem;
+  height: 48px;
+  border-radius: 8px;
+  font-weight: 600;
+}
