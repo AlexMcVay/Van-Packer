@@ -1,82 +1,87 @@
 <!DOCTYPE html>
-<html lang="en" class="pico">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Van Packing Optimizer with Cushions</title>
-  <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1.*/css/pico.min.css" />
+  <title>Van Packing Optimizer 3D with Three.js</title>
+  <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1/css/pico.min.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <main class="container">
-    <h1>Van/Container Packing Optimizer with Cushions</h1>
-
+<header>
+  <nav class="container-fluid">
+    <ul><li><strong> Van/Container Packing Optimizer 3D</strong></li></ul>
+    <ul>
+      <li><button id="btnExport">Export</button></li>
+      <li>
+        <input type="file" id="import-file" style="display:none" />
+        <button onclick="document.getElementById('import-file').click()">Import</button>
+      </li>
+    </ul>
+  </nav>
+</header>
+<main class="container">
+  <section id="containerSection">
+    <h2>Step 1: Define Container</h2>
     <form id="container-form" class="grid">
-      <label for="container-name">Container Name:</label>
-      <input type="text" id="container-name" required />
-      <label for="container-l">Length (L):</label>
-      <input type="number" id="container-l" min="1" required />
-      <label for="container-w">Width (W):</label>
-      <input type="number" id="container-w" min="1" required />
-      <label for="container-h">Height (H):</label>
-      <input type="number" id="container-h" min="1" required />
-      <label for="container-maxw">Max Weight (kg):</label>
-      <input type="number" id="container-maxw" min="1" required />
-      <button type="button" onclick="setContainer()">Set Container</button>
+      <label>Container Name:
+        <input type="text" id="container-name" required />
+      </label>
+      <label>Length (L):
+        <input type="number" id="container-l" min="1" required />
+      </label>
+      <label>Width (W):
+        <input type="number" id="container-w" min="1" required />
+      </label>
+      <label>Height (H):
+        <input type="number" id="container-h" min="1" required />
+      </label>
+      <label>Max Weight (kg):
+        <input type="number" id="container-maxw" min="1" required />
+      </label>
+      <button type="button" id="btnSetContainer">Set Container</button>
     </form>
+  </section>
 
-    <form id="item-form" class="grid" style="display: none">
-      <label for="item-name">Item Name:</label>
-      <input type="text" id="item-name" required />
-      <label for="item-l">Length:</label>
-      <input type="number" id="item-l" min="1" required />
-      <label for="item-w">Width:</label>
-      <input type="number" id="item-w" min="1" required />
-      <label for="item-h">Height:</label>
-      <input type="number" id="item-h" min="1" required />
-      <label for="item-weight">Weight (kg):</label>
-      <input type="number" id="item-weight" min="0" step="0.1" required />
-      <label for="item-qty">Quantity:</label>
-      <input type="number" id="item-qty" min="1" value="1" required />
-      <label for="item-fragile">Fragile?</label>
-      <input type="checkbox" id="item-fragile" />
-      <label for="item-cushion">Cushion?</label>
-      <input type="checkbox" id="item-cushion" />
-      <button type="button" onclick="addItem()">Add Item</button>
+  <section id="itemSection" style="display:none;">
+    <h2>Step 2: Add Items</h2>
+    <form id="item-form" class="grid">
+      <label>Shape:
+        <select id="item-shape" required>
+          <option value="box" selected>Box</option>
+          <option value="sofa">Sofa (L-shape)</option>
+          <option value="table">Table (Octagon)</option>
+          <option value="chair">Chair (Hexagon)</option>
+        </select>
+      </label>
+      <label>Item Name:
+        <input type="text" id="item-name" required />
+      </label>
+      <label>Length:
+        <input type="number" id="item-l" min="1" required />
+      </label>
+      <label>Width:
+        <input type="number" id="item-w" min="1" required />
+      </label>
+      <label>Height:
+        <input type="number" id="item-h" min="1" required />
+      </label>
+      <label>Weight (kg):
+        <input type="number" id="item-weight" min="0" step="0.1" required />
+      </label>
+      <label>Quantity:
+        <input type="number" id="item-qty" min="1" value="1" required />
+      </label>
+      <label><input type="checkbox" id="item-fragile" /> Fragile?</label>
+      <label><input type="checkbox" id="item-cushion" /> Is Cushion?</label>
+      <button type="button" id="btnAddItem">Add Item</button>
     </form>
-
-    <div class="button-row">
-        <button onclick="pack()">Pack</button>
-        <button onclick="exportData()">Export JSON</button>
-        <input type="file" id="import-file" style="display:none" onchange="importData(event)" />
-        <button onclick="document.getElementById('import-file').click()">Import JSON</button>
-    </div>
-
-    <section>
-      <h2>Items</h2>
-      <table id="items-table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Dims (L×W×H)</th>
-            <th>Weight (kg)</th>
-            <th>Qty</th>
-            <th>Fragile</th>
-            <th>Cushion</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </section>
-
-    <section>
-      <h2>Packing Visualization (Ground Layer)</h2>
-      <canvas id="van-canvas" width="600" height="400" aria-label="Packing visualization"></canvas>
-      <p><small><em>Blue: Regular item, Orange: Cushion surrounding fragile items</em></small></p>
-    </section>
-  </main>
-  
-  <script src="app.js"></script>
-</body>
-</html>
-
+    <table id="items-table">
+      <thead>
+        <tr>
+          <th>Name</th><th>Shape</th><th>Dims</th><th>Weight</th><th>Qty</th><th>Fragile</th><th>Cushion</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <button id="btnPack"><strong>Pack & Visual
