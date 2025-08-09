@@ -1,87 +1,109 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Van Packing Optimizer 3D with Three.js</title>
-  <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1/css/pico.min.css" />
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Van Packing Simulator</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1.*/css/pico.min.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<header>
-  <nav class="container-fluid">
-    <ul><li><strong> Van/Container Packing Optimizer 3D</strong></li></ul>
-    <ul>
-      <li><button id="btnExport">Export</button></li>
-      <li>
-        <input type="file" id="import-file" style="display:none" />
-        <button onclick="document.getElementById('import-file').click()">Import</button>
-      </li>
-    </ul>
-  </nav>
-</header>
-<main class="container">
-  <section id="containerSection">
-    <h2>Step 1: Define Container</h2>
-    <form id="container-form" class="grid">
-      <label>Container Name:
-        <input type="text" id="container-name" required />
-      </label>
-      <label>Length (L):
-        <input type="number" id="container-l" min="1" required />
-      </label>
-      <label>Width (W):
-        <input type="number" id="container-w" min="1" required />
-      </label>
-      <label>Height (H):
-        <input type="number" id="container-h" min="1" required />
-      </label>
-      <label>Max Weight (kg):
-        <input type="number" id="container-maxw" min="1" required />
-      </label>
-      <button type="button" id="btnSetContainer">Set Container</button>
-    </form>
-  </section>
 
-  <section id="itemSection" style="display:none;">
-    <h2>Step 2: Add Items</h2>
-    <form id="item-form" class="grid">
-      <label>Shape:
-        <select id="item-shape" required>
-          <option value="box" selected>Box</option>
-          <option value="sofa">Sofa (L-shape)</option>
-          <option value="table">Table (Octagon)</option>
-          <option value="chair">Chair (Hexagon)</option>
-        </select>
-      </label>
-      <label>Item Name:
-        <input type="text" id="item-name" required />
-      </label>
-      <label>Length:
-        <input type="number" id="item-l" min="1" required />
-      </label>
-      <label>Width:
-        <input type="number" id="item-w" min="1" required />
-      </label>
-      <label>Height:
-        <input type="number" id="item-h" min="1" required />
-      </label>
-      <label>Weight (kg):
-        <input type="number" id="item-weight" min="0" step="0.1" required />
-      </label>
-      <label>Quantity:
-        <input type="number" id="item-qty" min="1" value="1" required />
-      </label>
-      <label><input type="checkbox" id="item-fragile" /> Fragile?</label>
-      <label><input type="checkbox" id="item-cushion" /> Is Cushion?</label>
-      <button type="button" id="btnAddItem">Add Item</button>
-    </form>
-    <table id="items-table">
-      <thead>
-        <tr>
-          <th>Name</th><th>Shape</th><th>Dims</th><th>Weight</th><th>Qty</th><th>Fragile</th><th>Cushion</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-    <button id="btnPack"><strong>Pack & Visual
+    <header class="container">
+        <hgroup>
+            <h1>Van Packing Simulator</h1>
+            <p>Plan your packing with a 3D visualization.</p>
+        </hgroup>
+    </header>
+
+    <main class="container">
+        <section id="controls">
+            <h2>Van Configuration</h2>
+            <form id="van-form">
+                <div class="grid">
+                    <label for="van-width">
+                        Van Width (cm)
+                        <input type="number" id="van-width" name="van-width" value="200" min="1" required>
+                    </label>
+                    <label for="van-height">
+                        Van Height (cm)
+                        <input type="number" id="van-height" name="van-height" value="200" min="1" required>
+                    </label>
+                    <label for="van-depth">
+                        Van Depth (cm)
+                        <input type="number" id="van-depth" name="van-depth" value="400" min="1" required>
+                    </label>
+                </div>
+                <button type="submit" class="secondary">Set Van Dimensions</button>
+            </form>
+
+            <hr>
+
+            <h2>Add Items</h2>
+            <form id="item-form">
+                <div class="grid">
+                    <label for="item-name">
+                        Item Name
+                        <input type="text" id="item-name" name="item-name" placeholder="E.g., Box A" required>
+                    </label>
+                    <label for="item-quantity">
+                        Quantity
+                        <input type="number" id="item-quantity" name="item-quantity" value="1" min="1" required>
+                    </label>
+                </div>
+                <div class="grid">
+                    <label for="item-width">
+                        Width (cm)
+                        <input type="number" id="item-width" name="item-width" min="1" required>
+                    </label>
+                    <label for="item-height">
+                        Height (cm)
+                        <input type="number" id="item-height" name="item-height" min="1" required>
+                    </label>
+                    <label for="item-depth">
+                        Depth (cm)
+                        <input type="number" id="item-depth" name="item-depth" min="1" required>
+                    </label>
+                </div>
+                <div class="grid">
+                    <label for="item-weight">
+                        Weight (kg)
+                        <input type="number" id="item-weight" name="item-weight" min="0" required>
+                    </label>
+                    <fieldset>
+                        <legend>Properties</legend>
+                        <label for="item-fragile">
+                            <input type="checkbox" id="item-fragile" name="item-fragile">
+                            Fragile
+                        </label>
+                        <label for="item-cushion">
+                            <input type="checkbox" id="item-cushion" name="item-cushion">
+                            Cushion
+                        </label>
+                    </fieldset>
+                </div>
+                <button type="submit">Add Item</button>
+            </form>
+            <div id="item-list">
+                <h3>Items to Pack</h3>
+                <ul></ul>
+            </div>
+            <button id="pack-button" class="contrast">Pack Van</button>
+        </section>
+
+        <section id="visualization">
+            <h2>Van Visualization</h2>
+            <div id="van-container"></div>
+        </section>
+    </main>
+
+    <footer class="container">
+        <small>Powered by Three.js and Pico.css</small>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="js/app.js"></script>
+
+</body>
+</html>
