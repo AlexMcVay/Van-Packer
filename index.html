@@ -1,103 +1,59 @@
 <!DOCTYPE html>
 <html lang="en" class="pico">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Van Packing Optimizer 3D (Odd Shapes)</title>
-  <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1/css/pico.min.css" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Van Packing Optimizer 3D (Layers, Unit Converter)</title>
+  <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1/css/pico.min.css"/>
   <style>
-body {
-  background-color: #f6f8fa;
-}
-header nav ul:first-child strong {
-  font-size: 1.3rem;
-  color: #153a5b;
-}
-.container {
-  max-width: 1000px;
-  margin: auto;
-}
-h2 {
-  color: #295ca5;
-  margin-bottom: 8px;
-}
-form.grid {
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 12px;
-  background: #eef2fc;
-  border-radius: 8px;
-  padding: 12px 18px 6px 18px;
-}
-#items-table {
-  margin-top: 8px;
-  background: #f3f7fd;
-  border-radius: 7px;
-  font-size: 0.97rem;
-}
-#items-table th, #items-table td {
-  text-align: center;
-  padding: 2px 8px;
-}
-legend-box {
-  display: inline-block;
-  width: 18px;
-  height: 18px;
-  vertical-align: middle;
-  border-radius: 3px;
-  margin-right: 3px;
-  border: 1px solid #ccc;
-}
-.status {
-  font-weight: 600;
-  color: #226240;
-  margin-top: 6px;
-  font-size: 1.06em;
-}
-button {
-  font-size: 1.09em !important;
-  font-weight: 500 !important;
-}
-#three-container {
-  width: 900px;
-  height: 400px;
-  border: 3px solid #295ca5;
-  background: linear-gradient(180deg, #fff 80%, #e9ebee 100%);
-  border-radius: 8px;
-}
+    body { background: #f6f8fa; }
+    header nav ul:first-child strong { font-size: 1.3rem; color: #153a5b; }
+    .container { max-width: 1000px; margin: auto; }
+    h2 { color: #295ca5; margin-bottom: 8px; }
+    form.grid { grid-template-columns: 1fr 1fr 1fr; gap:12px; background:#eef2fc;
+      border-radius:8px; padding:12px 18px 6px 18px; }
+    #items-table { margin-top: 8px; background: #f3f7fd; border-radius:7px; font-size:0.97rem; }
+    #items-table th, #items-table td { text-align:center; padding:2px 8px;}
+    legend-box { display:inline-block; width:18px; height:18px; border-radius:3px; margin-right:3px; border:1px solid #ccc;}
+    .status { font-weight:600; color:#226240; margin-top:6px; font-size:1.06em;}
+    button { font-size:1.09em !important; font-weight:500 !important;}
+    #three-container { width:900px; height:400px; border:3px solid #295ca5;
+      background:linear-gradient(180deg,#fff 80%,#e9ebee 100%); border-radius:8px;}
+    #layersRow { display: flex; align-items: center;}
+    #layerSelect { margin-left:16px; }
+    .unit-toggle-group { margin-bottom:8px; }
+    .unit-toggle label {margin-right:10px;}
   </style>
 </head>
 <body>
 <header>
   <nav class="container-fluid">
-    <ul><li><strong>🚚 Van/Container Packing Optimizer 3D</strong></li></ul>
+    <ul><li><strong> Van/Container Packing Optimizer 3D</strong></li></ul>
     <ul>
       <li><button id="btnExport">Export</button></li>
       <li>
-        <input type="file" id="import-file" style="display:none" />
+        <input type="file" id="import-file" style="display:none"/>
         <button onclick="document.getElementById('import-file').click()">Import</button>
       </li>
     </ul>
   </nav>
 </header>
 <main class="container">
+
   <section id="containerSection">
     <h2>Step 1: Define Container</h2>
+    <div class="unit-toggle-group">
+      <label class="unit-toggle"><input type="radio" name="unit" value="ft" checked>Feet (ft)</label>
+      <label class="unit-toggle"><input type="radio" name="unit" value="in">Inches (in)</label>
+      <button id="btnConvertUnits" type="button">Convert Units</button>
+      <span id="unitMessage"></span>
+    </div>
     <form id="container-form" class="grid">
-      <label>Container Name:
-        <input type="text" id="container-name" required />
-      </label>
-      <label>Length (L):
-        <input type="number" id="container-l" min="1" required />
-      </label>
-      <label>Width (W):
-        <input type="number" id="container-w" min="1" required />
-      </label>
-      <label>Height (H):
-        <input type="number" id="container-h" min="1" required />
-      </label>
-      <label>Max Weight (kg):
-        <input type="number" id="container-maxw" min="1" required />
-      </label>
+      <label>Container Name:<input type="text" id="container-name" required/></label>
+      <label>Length (L):<input type="number" id="container-l" min="1" required/></label>
+      <label>Width (W):<input type="number" id="container-w" min="1" required/></label>
+      <label>Height (H):<input type="number" id="container-h" min="1" required/></label>
+      <label>Max Weight (kg):<input type="number" id="container-maxw" min="1" required/></label>
       <button type="button" id="btnSetContainer">Set Container</button>
     </form>
   </section>
@@ -113,26 +69,14 @@ button {
           <option value="chair">Chair (Hexagon)</option>
         </select>
       </label>
-      <label>Item Name:
-        <input type="text" id="item-name" required />
-      </label>
-      <label>Length:
-        <input type="number" id="item-l" min="1" required />
-      </label>
-      <label>Width:
-        <input type="number" id="item-w" min="1" required />
-      </label>
-      <label>Height:
-        <input type="number" id="item-h" min="1" required />
-      </label>
-      <label>Weight (kg):
-        <input type="number" id="item-weight" min="0" step="0.1" required />
-      </label>
-      <label>Quantity:
-        <input type="number" id="item-qty" min="1" value="1" required />
-      </label>
-      <label><input type="checkbox" id="item-fragile" /> Fragile?</label>
-      <label><input type="checkbox" id="item-cushion" /> Is Cushion?</label>
+      <label>Item Name:<input type="text" id="item-name" required/></label>
+      <label>Length:<input type="number" id="item-l" min="1" required/></label>
+      <label>Width:<input type="number" id="item-w" min="1" required/></label>
+      <label>Height:<input type="number" id="item-h" min="1" required/></label>
+      <label>Weight (kg):<input type="number" id="item-weight" min="0" step="0.1" required/></label>
+      <label>Quantity:<input type="number" id="item-qty" min="1" value="1" required/></label>
+      <label><input type="checkbox" id="item-fragile"/> Fragile?</label>
+      <label><input type="checkbox" id="item-cushion"/> Is Cushion?</label>
       <button type="button" id="btnAddItem">Add Item</button>
     </form>
     <table id="items-table">
@@ -147,7 +91,12 @@ button {
   </section>
 
   <section id="packingSection" style="display:none;">
-    <h2>Step 3: 3D Packing Visualization</h2>
+    <div id="layersRow">
+      <h2>Step 3: 3D Packing Visualization</h2>
+      <label id="layerLabel"><span style="margin-left:16px;">Layer (Height):</span>
+        <select id="layerSelect"></select>
+      </label>
+    </div>
     <div id="three-container"></div>
     <div id="packingStatus" class="status"></div>
     <p>
@@ -165,340 +114,437 @@ button {
 <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
 <script>
 const $ = s => document.querySelector(s);
+/**
+ * Shortcut for document.querySelector
+ * @param {string} s - CSS selector
+ * @returns {Element}
+ */
 const threeContainer = $("#three-container");
-
 let container = null, items = [], cushions = [];
+let unit = "ft"; // "ft" or "in"
+// Current unit for measurements ("ft" or "in")
+let currentLayer = 0;
 
-function showSection(selector, show) {
-  $(selector).style.display = show ? "" : "none";
+// ---- Unit Converter
+/**
+ * Converts a value between units (ft/in)
+ * @param {number} val - Value to convert
+ * @param {string} toUnit - Target unit ("ft" or "in")
+ * @returns {number}
+ */
+function convertValue(val, toUnit) {
+  return toUnit === "in" ? Math.round(val * 12 * 100) / 100
+    : Math.round(val / 12 * 100) / 100;
 }
+function convertAllUnits(toUnit) {
+  // Container
+  // Converts all relevant values in the UI between units
+  // @param {string} toUnit - Target unit ("ft" or "in")
+  ["container-l", "container-w", "container-h"].forEach(id => {
+    let x = $(id);
+    if (x.value) x.value = convertValue(+x.value, toUnit);
+  });
+  // Items
+  document.querySelectorAll("#items-table tbody tr").forEach(row => {
+    for (let i=2;i<=4;i++) {
+      let cell = row.cells[i];
+      let dims = cell ? cell.textContent.split("×") : [];
+      if (dims.length === 3) {
+        dims = dims.map(d => d.trim() ? convertValue(+d.trim(), toUnit) : "");
+        cell.textContent = dims.join("×");
+      }
+    }
+  });
+  // Update input labels
+  document.querySelectorAll("#containerSection label").forEach(lab => {
+    if (lab.textContent && (lab.textContent.includes("Length")||lab.textContent.includes("Width")||lab.textContent.includes("Height"))) {
+      lab.innerHTML = lab.innerHTML.replace(/\(.*\)/, toUnit === "in" ? "(inches)" : "(ft)");
+    }
+  });
+  document.querySelectorAll("#itemSection label").forEach(lab => {
+    if (lab.textContent && (lab.textContent.includes("Length")||lab.textContent.includes("Width")||lab.textContent.includes("Height"))) {
+      lab.innerHTML = lab.innerHTML.replace(/\(.*\)/, toUnit === "in" ? "(inches)" : "(ft)");
+    }
+  });
+  $("#unitMessage").textContent = `All measurements are now in ${toUnit === "in" ? "inches" : "feet"}!`;
+  unit = toUnit;
+}
+window.addEventListener("DOMContentLoaded", ()=>{
+  // Set up unit conversion button on DOM load
+  document.querySelectorAll('input[name="unit"]').forEach(el => {
+    el.onchange = e => convertAllUnits(e.target.value);
+  });
+  $("#btnConvertUnits").onclick = ()=>convertAllUnits(unit==="ft"?"in":"ft");
+});
 
+// ---- UI Logic
+/**
+ * Shows or hides a section of the UI
+ * @param {string} selector - CSS selector for the section
+ * @param {boolean} show - Whether to show (true) or hide (false)
+ */
+function showSection(selector, show){ $(selector).style.display = show?"":"none"; }
 $("#btnSetContainer").onclick = () => {
   const name = $("#container-name").value.trim();
+  // Set container button click handler
   const dims = [
     +$("#container-l").value,
     +$("#container-w").value,
     +$("#container-h").value,
-  ];
+  ].map(x=>unit==="in"?x/12:x); // Always store dims in feet internally
   const maxWeight = +$("#container-maxw").value;
-
-  if (!name || dims.some(d => isNaN(d) || d < 1) || isNaN(maxWeight) || maxWeight < 1) {
-    alert("Please fill container details correctly.");
-    return;
+  if (!name || dims.some(d=>isNaN(d)||d<0.1)||isNaN(maxWeight)||maxWeight<0.1) {
+    alert("Please fill container details correctly."); return;
   }
   container = { name, dims, maxWeight };
   showSection("#containerSection", false);
   showSection("#itemSection", true);
   showSection("#packingSection", false);
-  $("#packingStatus").textContent = "";
+  $("#packingStatus").textContent="";
 };
 
 $("#btnAddItem").onclick = () => {
   const shape = $("#item-shape").value;
+  // Add item button click handler
   const name = $("#item-name").value.trim();
   const dims = [
     +$("#item-l").value,
     +$("#item-w").value,
     +$("#item-h").value,
-  ];
+  ].map(x=>unit==="in"?x/12:x); // Always store dims in feet
   const weight = +$("#item-weight").value;
   const qty = +$("#item-qty").value;
   const fragile = $("#item-fragile").checked;
   const isCushion = $("#item-cushion").checked;
-
-  if (!name || dims.some(d => isNaN(d) || d < 1) || isNaN(weight) || isNaN(qty) || weight < 0 || qty < 1) {
-    alert("Please fill item details correctly.");
-    return;
+  if (!name || dims.some(d=>isNaN(d)||d<0.1) || isNaN(weight)||isNaN(qty)||weight<0||qty<1) {
+    alert("Please fill item details correctly."); return;
   }
-
   items.push({ name, shape, dims, weight, qty, fragile, isCushion });
   updateItemsTable();
   $("#item-form").reset();
 };
 
 function updateItemsTable() {
-  const tbody = $("#items-table tbody");
-  tbody.innerHTML = "";
-  items.forEach(i => {
-    tbody.innerHTML += `<tr>
-      <td>${i.name}</td>
-      <td>${i.shape}</td>
-      <td>${i.dims.join("×")}</td>
-      <td>${i.weight.toFixed(2)}</td>
-      <td>${i.qty}</td>
-      <td>${i.fragile ? "Yes" : "No"}</td>
-      <td>${i.isCushion ? "Yes" : "No"}</td>
-    </tr>`;
-  });
+  const tbody = $("#items-table tbody"); tbody.innerHTML="";
+  items.forEach(i=>{tbody.innerHTML+=`<tr>
+    <td>${i.name}</td>
+    <td>${i.shape}</td>
+    <td>${i.dims.map(d=>unit==="in"?Math.round(d*12*100)/100:d).join("×")}</td>
+    <td>${i.weight.toFixed(2)}</td>
+    <td>${i.qty}</td>
+    <td>${i.fragile?"Yes":"No"}</td>
+    <td>${i.isCushion?"Yes":"No"}</td>
+  </tr>`;});
 }
 
-// Auto-add cushions around fragile items
-function addAutoCushions(packItems) {
-  let autoCushions = [];
-  packItems.forEach(item => {
-    if (item.fragile && !item.isCushion) {
-      const qty = item.qty * 6;
+// --- Packing Logic
+/**
+ * Adds automatic cushions to packed items
+ * @param {Array} packItems - Items to pack
+ * @returns {Array}
+ */
+function addAutoCushions(packItems){
+  let autoCushions=[];
+  packItems.forEach(item=>{
+    if(item.fragile&&!item.isCushion){
+      const qty=item.qty*6;
       autoCushions.push({
-        name: `Cushion_for_${item.name}`,
-        shape: "box",
-        dims: [1,1,1],
-        weight: 0.5,
+        name:`Cushion_for_${item.name}`,
+        shape:"box",
+        dims:[1,1,1],
+        weight:0.5,
         qty,
-        fragile: false,
-        isCushion: true
+        fragile:false,
+        isCushion:true
       });
     }
   });
   return autoCushions;
 }
-
-function packItems(allItems, container) {
-  const cL = container.dims[0], cW = container.dims[1], cH = container.dims[2];
-  const grid = Array.from({ length: cL }, () =>
-    Array.from({ length: cW }, () =>
-      Array(cH).fill(null)
-    )
-  );
-  const placed = [];
-  let usedWeight = 0;
-  let sorted = allItems.slice().sort((a,b) =>
-    (b.dims[0] * b.dims[1] * b.dims[2]) - (a.dims[0] * a.dims[1] * a.dims[2])
-  );
-  for (const item of sorted) {
-    for (let q = 0; q < item.qty; q++) {
-      let placedOne = false;
-      let positions =
-        item.shape === "box" || item.isCushion
-          ? getPermutedPositionsForBox(item, cL, cW, cH)
-          : getPositionsForOddShape(item, cL, cW, cH);
-      for (const {x,y,z,L,W,H} of positions) {
-        if (canPlace(grid, x, y, z, L, W, H)) {
-          if (usedWeight + item.weight > container.maxWeight) break;
-          place(grid, x, y, z, L, W, H, item.name);
-          placed.push({ item, pos: [x, y, z], size: [L,W,H] });
-          usedWeight += item.weight;
-          placedOne = true;
-          break;
+function packItems(allItems,container){
+  /**
+   * Packs items into the container
+   * @param {Array} allItems - All items to pack
+   * @param {Object} container - Container dimensions
+   * @returns {Array}
+   */
+  const [cL,cW,cH]=container.dims.map(d=>Math.round(d));
+  const grid=Array.from({length:cL},()=>Array.from({length:cW},()=>Array(cH).fill(null)));
+  const placed=[];
+  let usedWeight=0;
+  let sorted=allItems.slice().sort((a,b)=>
+    (b.dims[0]*b.dims[1]*b.dims[2])-(a.dims[0]*a.dims[1]*a.dims[2]));
+  for(const item of sorted){
+    for(let q=0;q<item.qty;q++){
+      let placedOne=false;
+      let positions = (item.shape==="box"||item.isCushion)
+        ?getPermutedPositionsForBox(item,cL,cW,cH)
+        :getPositionsForOddShape(item,cL,cW,cH);
+      for(const{ x,y,z,L,W,H } of positions){
+        if(canPlace(grid,x,y,z,L,W,H)){
+          if(usedWeight+item.weight>container.maxWeight)break;
+          place(grid,x,y,z,L,W,H,item.name);
+          placed.push({item,pos:[x,y,z],size:[L,W,H]});
+          usedWeight+=item.weight;
+          placedOne=true;break;
         }
       }
-      if (!placedOne) {
-        $("#packingStatus").textContent += `Could not place ${item.name}. `;
-      }
+      if(!placedOne)$("#packingStatus").textContent+=`Could not place ${item.name}. `;
     }
   }
   return placed;
 }
-function getPermutedPositionsForBox(item, cL, cW, cH) {
-  let dimsPerm = permuteDims(item.dims);
-  const positions = [];
-  for (const [L,W,H] of dimsPerm) {
-    for (let z=0; z<=cH-H; z++)
-    for (let x=0; x<=cL-L; x++)
-    for (let y=0; y<=cW-W; y++) {
-      positions.push({x,y,z,L,W,H});
-    }
+function getPermutedPositionsForBox(item,cL,cW,cH){
+  /**
+   * Gets all possible positions for a box item
+   * @param {Object} item - Item to position
+   * @param {number} cL - Container length
+   * @param {number} cW - Container width
+   * @param {number} cH - Container height
+   * @returns {Array}
+   */
+  let dimsPerm=permuteDims(item.dims);const positions=[];
+  for(const[L,W,H]of dimsPerm){
+    for(let z=0;z<=cH-H;z++)
+    for(let x=0;x<=cL-L;x++)
+    for(let y=0;y<=cW-W;y++)positions.push({x,y,z,L,W,H});
   }
   return positions;
 }
-function getPositionsForOddShape(item, cL, cW, cH) {
-  const [L,W,H] = item.dims;
-  const positions = [];
-  for(let z=0; z<=cH-H; z++)
-  for(let x=0; x<=cL-L; x++)
-  for(let y=0; y<=cW-W; y++) {
-    positions.push({x,y,z,L:Math.ceil(L),W:Math.ceil(W),H:Math.ceil(H)});
-  }
+function getPositionsForOddShape(item,cL,cW,cH){
+  /**
+   * Gets possible positions for an odd-shaped item
+   * @param {Object} item - Item to position
+   * @param {number} cL - Container length
+   * @param {number} cW - Container width
+   * @param {number} cH - Container height
+   * @returns {Array}
+   */
+  const[L,W,H]=item.dims;
+  const positions=[];
+  for(let z=0;z<=cH-H;z++)
+  for(let x=0;x<=cL-L;x++)
+  for(let y=0;y<=cW-W;y++)positions.push({x,y,z,L:Math.ceil(L),W:Math.ceil(W),H:Math.ceil(H)});
   return positions;
 }
-function permuteDims([a,b,c]) {
-  let perms = [
-    [a,b,c],[a,c,b],[b,a,c],[b,c,a],[c,a,b],[c,b,a]
-  ];
-  let unique = [];
-  let add = arr => {
-    if (!unique.some(u=>u[0] === arr[0] && u[1] === arr[1] && u[2] === arr[2])) unique.push(arr);
-  };
-  perms.forEach(add);
-  return unique;
+function permuteDims([a,b,c]){
+  /**
+   * Permutes dimensions for packing
+   * @param {Array} dims - Array of dimensions
+   * @returns {Array}
+   */
+  let perms=[[a,b,c],[a,c,b],[b,a,c],[b,c,a],[c,a,b],[c,b,a]];
+  let unique=[];let add=arr=>{if(!unique.some(u=>u[0]===arr[0]&&u[1]===arr[1]&&u[2]===arr[2]))
+    unique.push(arr);};perms.forEach(add);return unique;
 }
-function canPlace(grid, x, y, z, L, W, H) {
-  for(let i=0; i<L; i++)
-  for(let j=0; j<W; j++)
-  for(let k=0; k<H; k++) {
-    if (grid[x+i][y+j][z+k]) return false;
-  }
+function canPlace(grid,x,y,z,L,W,H){
+  /**
+   * Checks if an item can be placed at a position
+   * @param {Array} grid - Packing grid
+   * @param {number} x - X position
+   * @param {number} y - Y position
+   * @param {number} z - Z position
+   * @param {number} L - Length
+   * @param {number} W - Width
+   * @param {number} H - Height
+   * @returns {boolean}
+   */
+  for(let i=0;i<L;i++)for(let j=0;j<W;j++)for(let k=0;k<H;k++)
+    if(grid[x+i]&&grid[x+i][y+j]&&grid[x+i][y+j][z+k])return false;
   return true;
 }
-function place(grid, x, y, z, L, W, H, name) {
-  for(let i=0; i<L; i++)
-  for(let j=0; j<W; j++)
-  for(let k=0; k<H; k++) {
-    grid[x+i][y+j][z+k] = name;
-  }
+function place(grid,x,y,z,L,W,H,name){
+  /**
+   * Places an item in the grid
+   * @param {Array} grid - Packing grid
+   * @param {number} x - X position
+   * @param {number} y - Y position
+   * @param {number} z - Z position
+   * @param {number} L - Length
+   * @param {number} W - Width
+   * @param {number} H - Height
+   * @param {string} name - Item name
+   */
+  for(let i=0;i<L;i++)
+  for(let j=0;j<W;j++)
+  for(let k=0;k<H;k++)grid[x+i][y+j][z+k]=name;
 }
 
-function colorForItem(p) {
-  if (p.item.isCushion) return 0xffc285;
-  if (p.item.fragile) return 0xee6666;
-  if (p.item.shape === "sofa") return 0xb48ddb;
-  if (p.item.shape === "chair") return 0xf7a47a;
-  if (p.item.shape === "table") return 0x8debf7;
+function colorForItem(p){
+  /**
+   * Returns a color for an item
+   * @param {Object} p - Item
+   * @returns {string}
+   */
+  if(p.item.isCushion)return 0xffc285;
+  if(p.item.fragile)return 0xee6666;
+  if(p.item.shape==="sofa")return 0xb48ddb;
+  if(p.item.shape==="chair")return 0xf7a47a;
+  if(p.item.shape==="table")return 0x8debf7;
   return 0x87ceeb;
 }
 
-function generateMesh(item) {
-  const color = colorForItem({item});
+//---Three.js Visualization---//
+/**
+ * Generates a Three.js mesh for an item
+ * @param {Object} item - Item to visualize
+ * @returns {THREE.Mesh}
+ */
+function generateMesh(item){
+  const color=colorForItem({item});
   let geometry;
-  if (item.shape === "box" || item.isCushion) {
-    geometry = new THREE.BoxGeometry(item.dims[0], item.dims[2], item.dims[1]);
-  } else {
-    switch(item.shape) {
-      case "sofa": geometry = new THREE.ShapeGeometry(createLShape(item.dims)); break;
-      case "table": geometry = new THREE.ShapeGeometry(createOctagon(item.dims)); break;
-      case "chair": geometry = new THREE.ShapeGeometry(createHexagon(item.dims)); break;
-      default: geometry = new THREE.BoxGeometry(item.dims[0], item.dims[2], item.dims[1]);
+  if(item.shape==="box"||item.isCushion)
+    geometry=new THREE.BoxGeometry(item.dims[0],item.dims[2],item.dims[1]);
+  else{
+    switch(item.shape){
+      case"sofa":geometry=new THREE.ShapeGeometry(createLShape(item.dims));break;
+      case"table":geometry=new THREE.ShapeGeometry(createOctagon(item.dims));break;
+      case"chair":geometry=new THREE.ShapeGeometry(createHexagon(item.dims));break;
+      default:geometry=new THREE.BoxGeometry(item.dims[0],item.dims[2],item.dims[1]);
     }
   }
-  let material = new THREE.MeshPhongMaterial({ color, shininess: 80 });
-  let mesh = new THREE.Mesh(geometry, material);
-  if (geometry.type === "ShapeGeometry") {
-    mesh.rotation.x = -Math.PI / 2;
-    mesh.position.y = item.dims[2] / 2;
-  } else {
-    mesh.position.y = item.dims[2] / 2;
-  }
+  let material=new THREE.MeshPhongMaterial({color,shininess:80});
+  let mesh=new THREE.Mesh(geometry,material);
+  if(geometry.type==="ShapeGeometry"){mesh.rotation.x=-Math.PI/2;mesh.position.y=item.dims[2]/2;}
+  else{mesh.position.y=item.dims[2]/2;}
   return mesh;
 }
-function createLShape(dims) {
-  const [L, W] = dims;
-  const shape = new THREE.Shape();
-  shape.moveTo(0, 0);
-  shape.lineTo(L*0.7, 0);
-  shape.lineTo(L*0.7, W*0.5);
-  shape.lineTo(L, W*0.5);
-  shape.lineTo(L, W);
-  shape.lineTo(0, W);
-  shape.lineTo(0, 0);
-  return shape;
+function createLShape(dims){
+  /**
+   * Creates a Three.js shape for an L-shaped item
+   * @param {Array} dims - Dimensions
+   * @returns {THREE.Shape}
+   */
+  const[L,W]=dims;const shape=new THREE.Shape();
+  shape.moveTo(0,0);shape.lineTo(L*0.7,0);shape.lineTo(L*0.7,W*0.5);shape.lineTo(L,W*0.5);
+  shape.lineTo(L,W);shape.lineTo(0,W);shape.lineTo(0,0);return shape;}
+function createOctagon(dims){
+  /**
+   * Creates a Three.js shape for an octagon
+   * @param {Array} dims - Dimensions
+   * @returns {THREE.Shape}
+   */
+  const[L,W]=dims;const shape=new THREE.Shape();
+  shape.moveTo(L*0.1,0);shape.lineTo(L*0.9,0);shape.lineTo(L,W*0.2);shape.lineTo(L,W*0.8);
+  shape.lineTo(L*0.9,W);shape.lineTo(L*0.1,W);shape.lineTo(0,W*0.8);shape.lineTo(0,W*0.2);
+  shape.lineTo(L*0.1,0);return shape;}
+function createHexagon(dims){
+  /**
+   * Creates a Three.js shape for a hexagon
+   * @param {Array} dims - Dimensions
+   * @returns {THREE.Shape}
+   */
+  const[L,W]=dims;const shape=new THREE.Shape();
+  shape.moveTo(0,0);shape.lineTo(L*0.6,0);shape.lineTo(L,W*0.6);shape.lineTo(L,W);
+  shape.lineTo(L*0.4,W);shape.lineTo(0,W*0.6);shape.lineTo(0,0);return shape;}
+
+function clearThree(container){while(container.firstChild)container.removeChild(container.firstChild);}
+let scene,camera,renderer;
+function initThree(container,width,height){
+  clearThree(container);scene=new THREE.Scene();
+  const aspect=width/height;const d=20;
+  camera=new THREE.OrthographicCamera(-d*aspect,d*aspect,d,-d,0.1,1000);
+  camera.position.set(30,30,30);camera.lookAt(0,0,0);
+  renderer=new THREE.WebGLRenderer({antialias:true});
+  renderer.setSize(width,height);container.appendChild(renderer.domElement);
+  const ambientLight=new THREE.AmbientLight(0x888888);scene.add(ambientLight);
+  const directionalLight=new THREE.DirectionalLight(0xffffff,0.8);
+  directionalLight.position.set(30,40,10);scene.add(directionalLight);
 }
-function createOctagon(dims) {
-  const [L, W] = dims;
-  const shape = new THREE.Shape();
-  shape.moveTo(L*0.1, 0);
-  shape.lineTo(L*0.9, 0);
-  shape.lineTo(L, W*0.2);
-  shape.lineTo(L, W*0.8);
-  shape.lineTo(L*0.9, W);
-  shape.lineTo(L*0.1, W);
-  shape.lineTo(0, W*0.8);
-  shape.lineTo(0, W*0.2);
-  shape.lineTo(L*0.1, 0);
-  return shape;
-}
-function createHexagon(dims) {
-  const [L, W] = dims;
-  const shape = new THREE.Shape();
-  shape.moveTo(0, 0);
-  shape.lineTo(L * 0.6, 0);
-  shape.lineTo(L, W * 0.6);
-  shape.lineTo(L, W);
-  shape.lineTo(L * 0.4, W);
-  shape.lineTo(0, W * 0.6);
-  shape.lineTo(0, 0);
-  return shape;
+function drawContainer(containerDims){
+  const[L,W,H]=containerDims;
+  const edges=new THREE.EdgesGeometry(new THREE.BoxGeometry(L,H,W));
+  const line=new THREE.LineSegments(edges,new THREE.LineBasicMaterial({color:0x153a5b,linewidth:2}));
+  line.position.set(L/2,H/2,W/2);scene.add(line);
 }
 
-function clearThree(container) {
-  while (container.firstChild) container.removeChild(container.firstChild);
-}
-let scene, camera, renderer;
 
-function initThree(container, width, height) {
-  clearThree(container);
-  scene = new THREE.Scene();
-  const aspect = width / height;
-  const d = 20;
-  camera = new THREE.OrthographicCamera(
-    -d * aspect, d * aspect,
-    d, -d,
-    0.1, 1000
-  );
-  camera.position.set(30, 30, 30);
-  camera.lookAt(0, 0, 0);
-  renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setSize(width, height);
-  container.appendChild(renderer.domElement);
-  const ambientLight = new THREE.AmbientLight(0x888888);
-  scene.add(ambientLight);
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-  directionalLight.position.set(30, 40, 10);
-  scene.add(directionalLight);
-}
+function createLabelSprite(text, color = "#153a5b") {
+  const canvas = document.createElement("canvas");
+  canvas.width = 256;
+  canvas.height = 64;
+  const ctx = canvas.getContext("2d");
+  ctx.font = "bold 28px Arial";
+  ctx.fillStyle = color;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(text, canvas.width / 2, canvas.height / 2);
 
-function drawContainer(containerDims) {
-  const [L, W, H] = containerDims;
-  const edges = new THREE.EdgesGeometry(new THREE.BoxGeometry(L, H, W));
-  const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x153a5b, linewidth: 2 }));
-  line.position.set(L / 2, H / 2, W / 2);
-  scene.add(line);
+  const texture = new THREE.CanvasTexture(canvas);
+  const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
+  const sprite = new THREE.Sprite(material);
+  sprite.scale.set(2.5, 0.6, 1); // Adjust size as needed
+  return sprite;
 }
-
-function drawPacked(placements) {
-  placements.forEach(p => {
-    const mesh = generateMesh(p.item);
-    mesh.position.set(p.pos[0] + p.size[0]/2, p.pos[2] + p.size[2]/2, p.pos[1] + p.size[1]/2);
+// ...existing code...
+function drawPacked(placements,layer){
+  placements.forEach(p=>{
+    const lz=p.pos[2],hz=lz+p.size[2];
+    if(layer<lz||layer>=hz)return; // Only show items on specified layer
+    const mesh=generateMesh(p.item);
+    mesh.position.set(p.pos[0]+p.size[0]/2,layer+0.5,p.pos[1]+p.size[1]/2);
     scene.add(mesh);
   });
 }
+function render(){requestAnimationFrame(render);renderer.render(scene,camera);}
 
-function render() {
-  requestAnimationFrame(render);
-  renderer.render(scene, camera);
+function updateLayerSelector(maxH){
+  const layerSel=$("#layerSelect");layerSel.innerHTML="";
+  for(let z=0;z<maxH;z++)
+    layerSel.innerHTML+=`<option value="${z}">${z+1}</option>`;
+  layerSel.value=currentLayer;
+  layerSel.onchange=e=>{currentLayer=+e.target.value;runVisualization();};
+}
+function runVisualization(){
+  clearThree(threeContainer);
+  initThree(threeContainer,900,400);
+  drawContainer(container.dims);
+  drawPacked(window.lastPlacements||[],currentLayer);
+  render();
 }
 
-$("#btnPack").onclick = () => {
-  if (!container) { alert("Please set container first."); return; }
-  cushions = addAutoCushions(items.filter(i => !i.isCushion));
-  const allItems = items.concat(cushions);
-  const placements = packItems(allItems, container);
-  showSection("#packingSection", true);
-  initThree(threeContainer, 900, 400);
-  drawContainer(container.dims);
-  drawPacked(placements);
-  render();
-  $("#packingStatus").textContent = `Packed ${placements.length} items.`;
+//--- Main Packing Button ---//
+$("#btnPack").onclick=()=>{
+  if(!container){alert("Please set container first.");return;}
+  cushions=addAutoCushions(items.filter(i=>!i.isCushion));
+  const allItems=items.concat(cushions);
+  const placements=window.lastPlacements=packItems(allItems,container);
+  showSection("#packingSection",true);
+  currentLayer=0;
+  updateLayerSelector(Math.round(container.dims[2]));
+  runVisualization();
+  $("#packingStatus").textContent=`Packed ${placements.length} items.`;
 };
 
-$("#btnExport").onclick = () => {
-  if (!container) { alert("Set container first."); return; }
-  let data = { container, items };
-  let url = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
-  let a = document.createElement("a");
-  a.href = url;
-  a.download = "van_packing.json";
-  a.click();
+// Export/import
+$("#btnExport").onclick=()=>{
+  if(!container){alert("Set container first.");return;}
+  let data={container,items};
+  let url="data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(data,null,2));
+  let a=document.createElement("a");
+  a.href=url;a.download="van_packing.json";a.click();
 };
-$("#import-file").onchange = event => {
-  const reader = new FileReader();
-  reader.onload = e => {
-    const data = JSON.parse(e.target.result);
-    container = data.container;
-    items = data.items;
-    $("#container-name").value = container.name;
-    $("#container-l").value = container.dims[0];
-    $("#container-w").value = container.dims[1];
-    $("#container-h").value = container.dims[2];
-    $("#container-maxw").value = container.maxWeight;
+$("#import-file").onchange=event=>{
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const data=JSON.parse(e.target.result);
+    container=data.container;items=data.items;
+    $("#container-name").value=container.name;
+    $("#container-l").value=unit==="in"?Math.round(container.dims[0]*12*100)/100:container.dims[0];
+    $("#container-w").value=unit==="in"?Math.round(container.dims[1]*12*100)/100:container.dims[1];
+    $("#container-h").value=unit==="in"?Math.round(container.dims[2]*12*100)/100:container.dims[2];
+    $("#container-maxw").value=container.maxWeight;
     updateItemsTable();
-    showSection("#containerSection", false);
-    showSection("#itemSection", true);
-    showSection("#packingSection", false);
-    $("#packingStatus").textContent = "Imported JSON successfully.";
+    showSection("#containerSection",false);
+    showSection("#itemSection",true);
+    showSection("#packingSection",false);
+    $("#packingStatus").textContent="Imported JSON successfully.";
   };
   reader.readAsText(event.target.files[0]);
 };
-showSection("#itemSection", false);
-showSection("#packingSection", false);
+showSection("#itemSection",false);
+showSection("#packingSection",false);
 </script>
 </body>
 </html>
+
